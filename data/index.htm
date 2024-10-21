@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Управление вентилятором</title>
+        <link rel="icon" href="logo.svg" type="image/svg+xml">
+        <link href="bootstrap.min.css" rel="stylesheet" >
+        <link href="bootstrap-icons.min.css" rel="stylesheet" >
+        <script src="user.js"></script>
+    </head>
+    <body>
+        <input type="hidden" value="1" id="forfirstload">
+        <input type="hidden" value="0" id="fanspeedblock">
+        <div id="wrapper" class="bg-light">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <div class="container-fluid">
+                    <div class="d-flex ml-auto">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#globalNavbar" aria-controls="globalNavbar" aria-expanded="false" aria-label="Меню навигации">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    <a class="navbar-brand p-0 me-0 me-lg-2 " href="/" data-bs-target="#main" data-bs-toggle="collapse">
+                        <img src="logo.svg" />
+                        Управление вентилятором
+                    </a>
+                    <div class="collapse navbar-collapse" id="globalNavbar">
+                        <ul class="navbar-nav mr-auto order-1">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-bs-target="#page1" data-bs-toggle="collapse">
+                                    Подключение
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-bs-target="#page2" data-bs-toggle="collapse">
+                                    Home Assistant
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-bs-target="#page3" data-bs-toggle="collapse">
+                                    Пины
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-bs-target="#page4" data-bs-toggle="collapse">
+                                    Файлы
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="row">&nbsp;</div>
+            <div id="pages">
+                <div id="main" class="collapse show justify-content-md-center row" data-bs-parent="#pages">
+                    <div  class="card col col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title h3">Управление устройством</h5>
+                            <hr>
+                            <p class="card-text">Измените скорость ветрового потока вентилятора перемещая бегунок. 
+                                <b>Текущая скорость:
+                                    <span id="fanstatus">Выкл.</span>
+                                </b>
+                            </p>
+                            <div>
+                                <label for="fanspeed" class="form-label">Скорость вращения</label>
+                                <input type="range" class="form-range" value="0" min="0" max="3" id="fanspeed" 
+                                onchange="fanspeedchange()" 
+                                onmouseover="onFanSpeedMouseOver()"
+                                onmouseout="onFanSpeedMouseOut()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="page1" class="collapse justify-content-md-center row" data-bs-parent="#pages">
+                    <div  class="card col col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title h3">Управление подключением</h5>
+                            <hr>
+                            <p class="card-text h4">Укажите настройки подключения к WiFi</p>
+                            <form class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="wifissid" class="form-label">SSID</label>
+                                    <input type="text" class="form-control" id="wifissid">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="wifipassword" class="form-label">Пароль</label>
+                                    <input type="password" class="form-control" id="wifipassword"  autocomplete="off">
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" onclick="onSetWifi()">                                        
+                                        <span role="status">Сохраненить</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="page2" class="collapse justify-content-md-center row" data-bs-parent="#pages">
+                    <div  class="card col col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title h3">Настройки Home Assistant</h5>
+                            <hr>
+                            <p class="card-text h4">Укажите настройки HA</p>
+                            <form class="row g-3">
+                                <div class="col-md-12 form-check form-switch">
+                                    <label class="form-check-label" for="haenable">Включить доступ к Home Assistant</label>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="haenable" onclick="onHAEnable()">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="haserver" class="form-label">Сервер HA (MQTT) - IP</label>
+                                    <input type="text" class="form-control" id="haserver" title="Введить IP адрес сервера" readonly>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="hadevicename" class="form-label">Название устройства</label>
+                                    <input type="text" class="form-control" id="hadevicename" placeholder="Управление устройством" readonly>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="hamodulename" class="form-label">Название модуля</label>
+                                    <input type="text" class="form-control" id="hamodulename" placeholder="Вентилятор" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="halogin" class="form-label">Логин</label>
+                                    <input type="text" class="form-control" id="halogin">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="hapassword" class="form-label">Пароль</label>
+                                    <input type="password" class="form-control" id="hapassword"  autocomplete="off">
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-success" type="button" id="haButton" onclick="onHandlerHAParameters()">
+                                        <span role="status">Сохранить</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="page3" class="collapse justify-content-md-center row" data-bs-parent="#pages">
+                    <div  class="card col col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title h3">Настройки пинов</h5>
+                            <hr>
+                            <form class="row g-3">
+                                <p class="col-md-12 card-text h6">Укажите пины для управления скоростью вентилятора</p>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="pin1">Пин для включения 1-й скорости</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="p1">GPIO</span>
+                                        <input type="text" class="form-control" id="pin1" placeholder="34" aria-describedby="p1">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="pin2">Пин для включения 2-й скорости</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="p2">GPIO</span>
+                                        <input type="text" class="form-control" id="pin2" placeholder="35" aria-describedby="p2">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="pin3">Пин для включения 3-й скорости</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="p3">GPIO</span>
+                                        <input type="text" class="form-control" id="pin3" placeholder="32" aria-describedby="p3">
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="col-md-12 card-text h6">Укажите пин для кнопки</p>
+                                <div class="col-md-12">
+                                    <label class="form-label" for="pin4">Пин для кнопки</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="p4">GPIO</span>
+                                        <input type="text" class="form-control" id="pin4" placeholder="10" aria-describedby="p1">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-success" type="button" id="pinsButton" onclick="onSendPins()">
+                                        <span role="status">Сохранить</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="page4" class="collapse justify-content-md-center row" data-bs-parent="#pages">
+                    <div  class="card col col-md-8">
+                        <div class="card-body">
+                            <p class="card-title h3">Файлы</p>
+                            <hr>
+                            <p class="card-text h4">Управление файлами</p>
+                            <div class="row">
+                                <table id="filelist" class="table">
+                                    <thead>
+                                        <tr>
+                                          <th scope="col">&nbsp;</th>
+                                          <th scope="col">Имя файла</th>
+                                          <th scope="col">Размер файла</th>
+                                          <th scope="col">
+                                            <button type="button" class="btn btn-outline-primary" onclick="onFilesList();"><i class="bi bi-arrow-clockwise"></i></button>
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#fileUploadForm"><i class="bi bi-file-earmark-plus"></i></button>
+                                        </th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>Использовано\Свободно места</th>
+                                            <th><span id="filesize">0</span></th>
+                                            <th><span id="freesize">0</span></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody> </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="footer" class="justify-content-md-center row">
+                    <div class="row">&nbsp;</div>
+                    <div  class="card col col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Состояние устройства</h5>
+                            <hr>
+                            <p class="card-text">
+                                Основные показатели работы устройства. 
+                            </p>
+                            <ul>
+                                <li><b>Текущая скорость: </b><span id="currentspeed">Неизвестно</span></li>
+                                <li><b>Состояние WiFi: </b><span id="wifiMode">Неизвестно</span></li>
+                                <li><b>SSID WiFi: </b><span id="SSID">Неизвестно</span></li>
+                                <li><b>Уровень сигнала WiFi: </b><span id="RSSI">Неизвестно</span></li>
+                                <li><b>IP: </b><span id="IP">Неизвестно</span></li>
+                                <li><b>MAC: </b><span id="MAC">Неизвестно</span></li>
+                                <li><b>Подключение к HA: </b><span id="haStatus">Неизвестно</span></li>
+                                <li><b>Модель чипа: </b><span id="chipModel">Неизвестно</span> Rev. <span id="chipRevision">Неизвестно</span></li>
+                                <li><b>SDK: </b><span id="sdkVersion">Неизвестно</span></li>
+                                <li><b>ID Чипа: </b><span id="chipId">Неизвестно</span></li>
+                                <li><b>Ядра: </b><span id="cpuCore">Неизвестно</span></li>
+                                <li><b>Скорость процессора: </b><span id="cpuSpeed">Неизвестно</span> MHz</li>
+                                <li><b>Скорость флэш-памяти: </b><span id="flashSpeed">Неизвестно</span> Hz</li>
+                                <li><b>Размер флэш-памяти: </b><span id="flashSize">Неизвестно</span></li>
+                                <li><b>Размер файловой системы: </b><span id="fsTotalSize">Неизвестно</span></li>
+                                <li><b>Использовано на файловой системе: </b><span id="fsUsedSize">Неизвестно</span></li>
+                                <li><b>Свободно на файловой системе: </b><span id="fsFreeSize">Неизвестно</span></li>
+                            </ul>
+                            <div class="p-5 mb-4 bg-light rounded-3">
+                                <div class="container-fluid py-5">
+                                    <h1 class="display-5 fw-bold">Подсказка</h1>
+                                    <p class="col-md-12 fs-4">
+                                        Для перевода устройства в режим точки доступа, нажмите на кнопку и удерживайте ее. 
+                                        Для реализации функционала кнопки, нужно закрепленный за кнопкой пин притянуть к земле. 
+                                        Пока удерживается кнопка, будет создана точка доступа <mark>fanmanager</mark>. 
+                                        Для подключения к точке доступа пароля не требуется. 
+                                        Так же, точка доступа будет создана, если не удалось подключится к роутеру.
+                                    </p>
+                                </div>
+                            </div>
+                            <script>
+                                setInterval(()=>{getInfo();},3000);
+                            </script>
+                        </div>
+                        <img class="card-img-bottom" src="/ESP32-DevKit-V1.png">                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="fileUploadForm" tabindex="-1" aria-labelledby="fileUploadFormTitle" style="display: none;" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="fileUploadFormTitle">Загрузка файла</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label" for="fileNameUpload">Имя файла для сохранения</label>
+                            <div class="input-group">                            
+                                <input type="text" class="form-control" id="fileNameUpload">
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label" for="fileUpload">Файл для загрузки</label>
+                            <div class="input-group">                            
+                                <input type="file" class="form-control" id="fileUpload" onchange="onSelectFile()">
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="onFileUpload();">Загрузить</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <script src="bootstrap.bundle.min.js"></script>
+    </body>
+</html>

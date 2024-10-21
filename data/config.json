@@ -1,0 +1,10 @@
+{
+    "GPIOButton": 26,
+    "GPIOSpeed1": 32,
+    "GPIOSpeed2": 33,
+    "GPIOSpeed3": 25,
+    "haServer": "",
+    "haLogin": "",
+    "haPassword": "",
+    "haEnable": false
+}
